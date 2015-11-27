@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Crypto</string>
+    <string name="tv_encrypt_text">Type in the text you want to encrypt</string>
+    <string name="et_hint_encrypt">Text to encrypt</string>
+    <string name="tv_encrypted_text">Encrypted text</string>
+    <string name="button_encrypt_RSA">Encrypt with RSA</string>
+    <string name="decrypted_text_tv">Decrypted text</string>
+    <string name="creating_keys">Creating keys</string>
+</resources>
