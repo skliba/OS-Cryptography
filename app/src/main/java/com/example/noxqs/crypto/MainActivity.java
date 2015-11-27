@@ -53,7 +53,6 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        BaseView baseView = this;
 
         ExternalStorageHelper.checkExternalMedia();
         generate();
@@ -86,17 +85,15 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.button_encrypt)
     public void encryptClicked() {
         FileManagementHelper.writePLainTextToFile(etEncrypt.getText().toString());
-        byte[] something = encrypt(keyPair.getPublic(), etEncrypt.getText().toString().getBytes());
-        String kaoString = encodeToBase64(keyPair.getPublic(), something);
-        tvEncrypted.setText("" + kaoString);
+        byte[] temporaryByte = encrypt(keyPair.getPublic(), etEncrypt.getText().toString().getBytes());
+        tvEncrypted.setText(encodeToBase64(temporaryByte));
 
-        byte [] something1 = decodeFromBase64(keyPair.getPrivate(), tvEncrypted.getText().toString().getBytes());
-        String kaoNes = decrypt(keyPair.getPrivate(), something1);
-        tvDecrypted.setText("" + kaoNes);
+        byte [] tempByte = decodeFromBase64(tvEncrypted.getText().toString().getBytes());
+        tvDecrypted.setText(decrypt(keyPair.getPrivate() ,tempByte));
         FileManagementHelper.writeEncryptedTextToFile(tvEncrypted.getText().toString());
     }
 
-    private String encodeToBase64(PublicKey publicKey, byte[] cipheredText) {
+    private String encodeToBase64(byte[] cipheredText) {
         return Base64.encodeToString(cipheredText, Base64.DEFAULT);
     }
 
@@ -125,8 +122,7 @@ public class MainActivity extends BaseActivity {
         return new String(decryptedText);
     }
 
-    private byte[] decodeFromBase64(PrivateKey privateKey, byte[] cipheredText) {
-        Log.e("FGFASFSAF", cipheredText.toString());
+    private byte[] decodeFromBase64(byte[] cipheredText) {
         return Base64.decode(cipheredText, Base64.DEFAULT);
     }
 
