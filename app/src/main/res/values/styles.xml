@@ -15,4 +15,10 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="TabLayoutTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 </resources>

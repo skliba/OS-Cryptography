@@ -1,91 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="co.infinum.productive.activities.MainActivity"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <ScrollView
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:tabPadding="0dp"
+        app:tabIndicatorColor="@android:color/transparent"
+        app:tabSelectedTextColor="@android:color/white"
+        android:background="@color/colorPrimary"
+        app:tabTextAppearance="@style/TabLayoutTextAppearance"/>
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                style="@style/TextViewStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:text="@string/tv_encrypt_text"
-                android:textColor="@android:color/black" />
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColorHint="@color/colorPrimary">
-
-                <EditText
-                    android:id="@+id/et_encrypt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:hint="@string/et_hint_encrypt"
-                    android:textSize="16sp" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <Button
-                android:id="@+id/button_encrypt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="30dp"
-                android:text="@string/button_encrypt_RSA" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="50dp"
-                android:background="@color/colorPrimary" />
-
-            <TextView
-                style="@style/TextViewStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/tv_encrypted_text" />
-
-            <TextView
-                android:id="@+id/tv_encrypted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                tools:text="sadfgdagdagsdgsdgsd" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="50dp"
-                android:background="@color/colorPrimary" />
-
-            <TextView
-                style="@style/TextViewStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/decrypted_text_tv" />
-
-            <TextView
-                android:id="@+id/tv_decrypted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                tools:text="sadfgdagdagsdgsdgsd" />
-        </LinearLayout>
-    </ScrollView>
 </LinearLayout>

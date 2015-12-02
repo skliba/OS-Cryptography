@@ -3,16 +3,20 @@ package com.example.noxqs.crypto.utils;
 import android.os.Environment;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.security.KeyPair;
 
 /**
  * Created by noxqs on 25.11.15..
  */
-public abstract class FileManagementHelper {
+public class FileManagementHelper {
 
-    private static final String DEFAULT_FILE_LOCATION = Environment.getExternalStorageDirectory()
+    public static final String DEFAULT_FILE_LOCATION = Environment.getExternalStorageDirectory()
             .getAbsolutePath() + "/CryptoFiles/";
 
     public FileManagementHelper() {
@@ -93,5 +97,21 @@ public abstract class FileManagementHelper {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static Object readObject(String path) throws IOException, ClassNotFoundException {
+        ObjectInputStream inputStream = null;
+        inputStream = new ObjectInputStream(new FileInputStream(path));
+        Object retval = inputStream.readObject();
+        inputStream.close();
+        return retval;
+    }
+
+    public static void saveObject(Object obj, String path) throws IOException {
+        File file = new File(path);
+        ObjectOutputStream publicKeyOS = new ObjectOutputStream(
+                new FileOutputStream(path));
+        publicKeyOS.writeObject(obj);
+        publicKeyOS.close();
     }
 }

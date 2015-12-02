@@ -1,19 +1,22 @@
-package com.example.noxqs.crypto;
+package com.example.noxqs.crypto.fragments;
 
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.Base64;
-import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.noxqs.crypto.R;
 import com.example.noxqs.crypto.utils.ExternalStorageHelper;
 import com.example.noxqs.crypto.utils.FileManagementHelper;
-import com.example.noxqs.crypto.view.BaseView;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -26,13 +29,16 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends BaseActivity {
+public class RSAFragment extends Fragment {
 
     public static final String PUBLIC_KEY = "PUBLICKEY";
     public static final String PRIVATE_KEY = "PRIVATEKEY";
     public static final String ALGORITHM = "RSA";
+
     @Bind(R.id.et_encrypt)
     EditText etEncrypt;
+    @Bind(R.id.button_encrypt)
+    Button buttonEncrypt;
     @Bind(R.id.tv_encrypted)
     TextView tvEncrypted;
     @Bind(R.id.tv_decrypted)
@@ -47,12 +53,22 @@ public class MainActivity extends BaseActivity {
         Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
+    public static RSAFragment newInstance() {
+        RSAFragment fragment = new RSAFragment();
+        return fragment;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_rsa, container, false);
+        ButterKnife.bind(this, view);
 
         ExternalStorageHelper.checkExternalMedia();
         generate();
@@ -60,6 +76,8 @@ public class MainActivity extends BaseActivity {
 
         FileManagementHelper.writePublicKeyToFile(keyPair);
         FileManagementHelper.writePrivateKeyToFile(keyPair);
+
+        return view;
     }
 
     private void instantiateFile() {
@@ -74,8 +92,10 @@ public class MainActivity extends BaseActivity {
             KeyPairGenerator generator = KeyPairGenerator.getInstance(ALGORITHM);
             generator.initialize(KEY_SIZE);
             keyPair = generator.generateKeyPair();
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putString(PUBLIC_KEY, keyPair.getPublic().toString());
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putString(PRIVATE_KEY, keyPair.getPrivate().toString());
+            PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().
+                    putString(PUBLIC_KEY, keyPair.getPublic().toString());
+            PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().
+                    putString(PRIVATE_KEY, keyPair.getPrivate().toString());
             return keyPair;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -88,8 +108,8 @@ public class MainActivity extends BaseActivity {
         byte[] temporaryByte = encrypt(keyPair.getPublic(), etEncrypt.getText().toString().getBytes());
         tvEncrypted.setText(encodeToBase64(temporaryByte));
 
-        byte [] tempByte = decodeFromBase64(tvEncrypted.getText().toString().getBytes());
-        tvDecrypted.setText(decrypt(keyPair.getPrivate() ,tempByte));
+        byte[] tempByte = decodeFromBase64(tvEncrypted.getText().toString().getBytes());
+        tvDecrypted.setText(decrypt(keyPair.getPrivate(), tempByte));
         FileManagementHelper.writeEncryptedTextToFile(tvEncrypted.getText().toString());
     }
 
@@ -126,5 +146,10 @@ public class MainActivity extends BaseActivity {
         return Base64.decode(cipheredText, Base64.DEFAULT);
     }
 
-}
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
 
+}
