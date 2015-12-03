@@ -1,7 +1,6 @@
 package com.example.noxqs.crypto.fragments;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
@@ -16,7 +15,6 @@ import com.example.noxqs.crypto.R;
 import com.example.noxqs.crypto.utils.ExternalStorageHelper;
 import com.example.noxqs.crypto.utils.FileManagementHelper;
 
-import java.io.File;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -34,6 +32,7 @@ public class RSAFragment extends Fragment {
     public static final String PUBLIC_KEY = "PUBLICKEY";
     public static final String PRIVATE_KEY = "PRIVATEKEY";
     public static final String ALGORITHM = "RSA";
+    public static final String RSA_ENCRYPTED_TEXT_FILENAME = "RSA_encrypted_text.txt";
 
     @Bind(R.id.et_encrypt)
     EditText etEncrypt;
@@ -72,7 +71,7 @@ public class RSAFragment extends Fragment {
 
         ExternalStorageHelper.checkExternalMedia();
         generate();
-        instantiateFile();
+        ExternalStorageHelper.instantiateFile();
 
         FileManagementHelper.writePublicKeyToFile(keyPair);
         FileManagementHelper.writePrivateKeyToFile(keyPair);
@@ -80,12 +79,7 @@ public class RSAFragment extends Fragment {
         return view;
     }
 
-    private void instantiateFile() {
-        File baseWriteLocation = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/CryptoFiles/");
-        if (!baseWriteLocation.exists()) {
-            baseWriteLocation.mkdirs();
-        }
-    }
+
 
     public KeyPair generate() {
         try {
@@ -93,9 +87,9 @@ public class RSAFragment extends Fragment {
             generator.initialize(KEY_SIZE);
             keyPair = generator.generateKeyPair();
             PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().
-                    putString(PUBLIC_KEY, keyPair.getPublic().toString());
+                    putString(PUBLIC_KEY, keyPair.getPublic().toString()).apply();
             PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().
-                    putString(PRIVATE_KEY, keyPair.getPrivate().toString());
+                    putString(PRIVATE_KEY, keyPair.getPrivate().toString()).apply();
             return keyPair;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -104,13 +98,13 @@ public class RSAFragment extends Fragment {
 
     @OnClick(R.id.button_encrypt)
     public void encryptClicked() {
-        FileManagementHelper.writePLainTextToFile(etEncrypt.getText().toString());
+        FileManagementHelper.writeToFile(etEncrypt.getText().toString(), "RSA_plain_text.txt");
         byte[] temporaryByte = encrypt(keyPair.getPublic(), etEncrypt.getText().toString().getBytes());
         tvEncrypted.setText(encodeToBase64(temporaryByte));
+        FileManagementHelper.writeToFile(tvEncrypted.getText().toString(), RSA_ENCRYPTED_TEXT_FILENAME);
 
-        byte[] tempByte = decodeFromBase64(tvEncrypted.getText().toString().getBytes());
+        byte[] tempByte = decodeFromBase64(FileManagementHelper.readFromFile(RSA_ENCRYPTED_TEXT_FILENAME).getBytes());
         tvDecrypted.setText(decrypt(keyPair.getPrivate(), tempByte));
-        FileManagementHelper.writeEncryptedTextToFile(tvEncrypted.getText().toString());
     }
 
     private String encodeToBase64(byte[] cipheredText) {

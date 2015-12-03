@@ -2,10 +2,12 @@ package com.example.noxqs.crypto.utils;
 
 import android.os.Environment;
 
+import java.io.File;
+
 /**
  * Created by noxqs on 25.11.15..
  */
-public abstract class ExternalStorageHelper {
+public class ExternalStorageHelper {
 
     public ExternalStorageHelper() {
     }
@@ -26,6 +28,14 @@ public abstract class ExternalStorageHelper {
         } else {
             // Can't read or write
             mExternalStorageAvailable = mExternalStorageWriteable = false;
+        }
+    }
+
+
+    public static void instantiateFile() {
+        File baseWriteLocation = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/CryptoFiles/");
+        if (!baseWriteLocation.exists()) {
+            baseWriteLocation.mkdirs();
         }
     }
 }

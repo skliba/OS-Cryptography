@@ -10,6 +10,7 @@ import com.example.noxqs.crypto.BaseActivity;
 import com.example.noxqs.crypto.R;
 import com.example.noxqs.crypto.adapters.ViewPagerAdapter;
 import com.example.noxqs.crypto.fragments.AESFragment;
+import com.example.noxqs.crypto.fragments.HashFragment;
 import com.example.noxqs.crypto.fragments.RSAFragment;
 import com.example.noxqs.crypto.fragments.SignFragment;
 
@@ -49,6 +50,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         tabLayout.addTab(tabLayout.newTab().setText("RSA"));
         tabLayout.addTab(tabLayout.newTab().setText("AES"));
         tabLayout.addTab(tabLayout.newTab().setText("Sign/Verify"));
+        tabLayout.addTab(tabLayout.newTab().setText("Hash"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
     }
 
@@ -58,6 +60,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         fragments.add(new RSAFragment());
         fragments.add(new AESFragment());
         fragments.add(new SignFragment());
+        fragments.add(new HashFragment());
     }
 
     @Override

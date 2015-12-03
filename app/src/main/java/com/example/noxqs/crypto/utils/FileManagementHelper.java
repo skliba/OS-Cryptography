@@ -2,12 +2,10 @@ package com.example.noxqs.crypto.utils;
 
 import android.os.Environment;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.security.KeyPair;
 
@@ -54,13 +52,13 @@ public class FileManagementHelper {
         }
     }
 
-    public static void writeSecretKeyToFile(String key){
-        File secretKeyFile = new File(DEFAULT_FILE_LOCATION, "tajni_kljuc.txt");
+    public static void writeToFile(String data, String filename){
+        File file = new File(DEFAULT_FILE_LOCATION + filename);
         try {
-            secretKeyFile.createNewFile();
-            FileOutputStream f = new FileOutputStream(secretKeyFile);
+            file.createNewFile();
+            FileOutputStream f = new FileOutputStream(file);
             PrintWriter pw = new PrintWriter(f);
-            pw.write(key);
+            pw.write(data);
             pw.flush();
             pw.close();
             f.close();
@@ -69,49 +67,23 @@ public class FileManagementHelper {
         }
     }
 
-    public static void writePLainTextToFile(String plainText){
-        File plainTextFile = new File(DEFAULT_FILE_LOCATION, "plain_text.txt");
-        try {
-            plainTextFile.createNewFile();
-            FileOutputStream f = new FileOutputStream(plainTextFile);
-            PrintWriter pw = new PrintWriter(f);
-            pw.write(plainText);
-            pw.flush();
-            pw.close();
-            f.close();
-        } catch (Exception e) {
+
+    public static String readFromFile(String filename){
+        String line;
+        String text = "";
+
+        try{
+            FileReader fileReader = new FileReader(DEFAULT_FILE_LOCATION + filename);
+            BufferedReader br = new BufferedReader(fileReader);
+
+            while((line = br.readLine()) != null){
+                text += line;
+            }
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
+        return text;
     }
 
-    public static void writeEncryptedTextToFile(String encryptedText){
-        File encryptedTextFile = new File(DEFAULT_FILE_LOCATION, "encrypted_text.txt");
-        try {
-            encryptedTextFile.createNewFile();
-            FileOutputStream f = new FileOutputStream(encryptedTextFile);
-            PrintWriter pw = new PrintWriter(f);
-            pw.write(encryptedText);
-            pw.flush();
-            pw.close();
-            f.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Object readObject(String path) throws IOException, ClassNotFoundException {
-        ObjectInputStream inputStream = null;
-        inputStream = new ObjectInputStream(new FileInputStream(path));
-        Object retval = inputStream.readObject();
-        inputStream.close();
-        return retval;
-    }
-
-    public static void saveObject(Object obj, String path) throws IOException {
-        File file = new File(path);
-        ObjectOutputStream publicKeyOS = new ObjectOutputStream(
-                new FileOutputStream(path));
-        publicKeyOS.writeObject(obj);
-        publicKeyOS.close();
-    }
 }

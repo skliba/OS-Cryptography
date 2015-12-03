@@ -8,15 +8,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.noxqs.crypto.R;
+import com.example.noxqs.crypto.utils.ExternalStorageHelper;
 import com.example.noxqs.crypto.utils.FileManagementHelper;
 
+import java.io.UnsupportedEncodingException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.Signature;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,9 +33,11 @@ import butterknife.OnClick;
  */
 public class SignFragment extends Fragment {
 
-    public static final String SIGNATURE_DSA = "SHA/DSA";
-    public static final String ALGORITHM_DSA = "DSA";
-    public static final int KEY_SIZE = 1024;
+    public static final String ALGORITHM = "SHA1withRSA";
+    public static final String MESSAGE = "This is a message that needs to be signed";
+    public static final String PLAIN_TEXT_FILE_NAME = "plain_text_to_be_signed.txt";
+    public static final String SIGNED_DATA_FILENAME = "signed_data.txt";
+    public static final String RSA = "RSA";
 
     @Bind(R.id.message_to_be_signed)
     TextView messageToBeSigned;
@@ -39,6 +47,8 @@ public class SignFragment extends Fragment {
     TextView correct;
 
     KeyPair pair;
+    private byte[] signedData;
+    private Signature signatureObj;
 
 
     @Nullable
@@ -47,55 +57,70 @@ public class SignFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sign, container, false);
         ButterKnife.bind(this, view);
 
+        ExternalStorageHelper.checkExternalMedia();
+        ExternalStorageHelper.instantiateFile();
+        try {
+            generateKeys();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
         //not extracting string resource cause its irrelevant
-        messageToBeSigned.setText("This is a message that needs to be signed");
+        messageToBeSigned.setText(MESSAGE);
+        FileManagementHelper.writeToFile(messageToBeSigned.getText().toString(), PLAIN_TEXT_FILE_NAME);
+
         return view;
     }
 
     @OnClick(R.id.start_signature)
     public void signatureClicked() {
         try {
-            generateKeys();
-            signature.setText(sign(messageToBeSigned.getText().toString().getBytes()) + "");
-            Log.e("Provjera1", (signature.getText().toString().getBytes()) + "");
-            if (verify(signature.getText().toString().getBytes())) {
+            signedData = sign(FileManagementHelper.readFromFile(PLAIN_TEXT_FILE_NAME).getBytes());
+            FileManagementHelper.writeToFile(signedData.toString(), SIGNED_DATA_FILENAME);
+            signature.setText(encodeToBase64(signedData));
+
+
+            //TODO uncomment this if its needed to show that code is valid
+            //signedData = (signedData.toString() + "sdgfdgad").getBytes();
+
+            if (verify(signedData)) {
                 correct.setText("Correct");
-                Log.e("TU", "U CORRECT SAM");
             } else {
                 correct.setText("Incorrect");
-                Log.e("TU", "U INCORRECT SAM");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    //TODO keyevi se moraju citati iz filea
-
     private void generateKeys() throws Exception {
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("SHA256withRSA");
-        Log.e("TU", "U CORRECT SAM");
-        generator.initialize(KEY_SIZE);
+        KeyPairGenerator generator = KeyPairGenerator.getInstance(RSA);
         pair = generator.generateKeyPair();
         FileManagementHelper.writePrivateKeyToFile(pair);
         FileManagementHelper.writePublicKeyToFile(pair);
     }
 
     private byte[] sign(byte[] bytes) throws Exception {
-        Signature signature = Signature.getInstance("SHA256withRSA");
-        signature.initSign(pair.getPrivate());
-        signature.update(bytes);
-        return signature.sign();
-
+        signatureObj = Signature.getInstance(ALGORITHM);
+        signatureObj.initSign(pair.getPrivate());
+        signatureObj.update(bytes);
+        return signatureObj.sign();
     }
 
     private boolean verify(byte[] bytes) throws Exception {
-        Log.e("BYTE", bytes.toString());
-        Signature signature = Signature.getInstance("SHA256withRSA");
-        signature.initVerify(pair.getPublic());
-        signature.update(bytes);
-        Log.e("TU", bytes.toString());
-        return signature.verify(bytes);
+        signatureObj.initVerify(pair.getPublic());
+        signatureObj.update(FileManagementHelper.readFromFile(PLAIN_TEXT_FILE_NAME).getBytes());
+        return signatureObj.verify(signedData);
+    }
+
+    //ne radi pretvorba, baca exception
+    private PrivateKey convertStringToPrivateKey() throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeySpecException{
+        String pkey = FileManagementHelper.readFromFile("privatni_kljuc.txt");
+        byte[] keyBytes = decodeFromBase64(pkey.getBytes("utf-8"));
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory fact = KeyFactory.getInstance("RSA");
+        return fact.generatePrivate(keySpec);
     }
 
 

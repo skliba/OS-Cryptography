@@ -1,13 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clipToPadding="false"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     android:fillViewport="true"
     android:padding="@dimen/activity_horizontal_margin"
     android:scrollbarStyle="outsideOverlay"
     tools:context=".activities.MainActivity">
+
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -19,6 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
+            android:layout_marginBottom="15dp"
             android:text="@string/tv_encrypt_text"
             android:textColor="@android:color/black"/>
 
@@ -38,12 +41,12 @@
         </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:id="@+id/button_encrypt"
+            android:id="@+id/button_hash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
-            android:text="@string/button_encrypt_RSA"/>
+            android:text="@string/generate_hash"/>
 
         <View
             android:layout_width="match_parent"
@@ -56,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/tv_encrypted_text"/>
+            android:text="@string/hash_value"/>
 
         <TextView
             android:id="@+id/tv_encrypted"
@@ -65,25 +68,7 @@
             android:layout_marginTop="30dp"
             tools:text="sadfgdagdagsdgsdgsd"/>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="50dp"
-            android:background="@color/colorPrimary"/>
 
-        <TextView
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/decrypted_text_tv"/>
-
-        <TextView
-            android:id="@+id/tv_decrypted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            tools:text="sadfgdagdagsdgsdgsd"/>
     </LinearLayout>
-</ScrollView>
 
+</ScrollView>
